@@ -1,6 +1,6 @@
 <!-- REAL-TIME VIDEO CHAT APPLICATION -->
 
-A production-ready WebRTC application enabling secure, low-latency video and audio communication between users in dedicated rooms. Uses socket.io for signaling, uuid for unique room generation, and webrtc with ICE servers for reliable peer-to-peer connections.
+A WebRTC application enabling secure, video and audio communication between users in generated rooms. Uses socket.io for signaling, uuid for unique room generation, and webrtc with ICE servers for reliable peer-to-peer connections.
 
 ---
 
