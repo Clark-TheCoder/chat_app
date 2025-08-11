@@ -19,6 +19,16 @@ app.get("/:room", (req, res) => {
   res.render("room", { roomId: req.params.room });
 });
 
+io.on("connection", (socket) => {
+  socket.on("join-room", (roomId) => {
+    let userId = socket.id;
+    //join the room with this id
+    socket.join(roomId);
+    //send the message to the room's other users that a new user has joined
+    socket.to(roomId).emit("user-connected", userId);
+  });
+});
+
 server.listen(3000, () => {
   console.log("running on port 3000.");
 });
