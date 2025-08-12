@@ -1,4 +1,4 @@
-import { createVideo } from "/js/createVideo.js";
+import { createVideo } from "/js/videoHandler.js";
 
 const socket = io("/");
 
@@ -42,6 +42,18 @@ function createPeerConnection(userId) {
   localStream
     .getTracks()
     .forEach((track) => peerConnection.addTrack(track, localStream));
+
+  // Add ICE candidate
+  peerConnection.onicecandidate = (e) => {
+    console.log(`Found ICE candidate for ${userId} and sending to server...`);
+    if (e.candidate) {
+      socket.emit("ice-candidate", {
+        caller: socket.id,
+        target: userId,
+        candidate: e.candidate,
+      });
+    }
+  };
 
   // When remote tracks arrives, create or update the video element
   peerConnection.ontrack = (event) => {
@@ -112,4 +124,15 @@ socket.on("answer", async ({ caller, sdp }) => {
 
   await peerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
   console.log(`Set remote description from answer of caller ${caller}`);
+});
+
+socket.on("ice-candidate", async ({ caller, candidate }) => {
+  const peerConnection = peers[caller];
+  if (peerConnection) {
+    try {
+      await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    } catch (error) {
+      console.log("Error occured while trying to add ICE candidate", error);
+    }
+  }
 });

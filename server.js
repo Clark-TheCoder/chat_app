@@ -41,6 +41,12 @@ io.on("connection", (socket) => {
     console.log(`Forwarding answer from ${socket.id} to ${target}`);
     io.to(target).emit("answer", data);
   });
+
+  socket.on("ice-candidate", (data) => {
+    const { target } = data;
+    console.log(`Forwarding ice candidate from ${socket.id} to ${target}`);
+    io.to(target).emit("ice-candidate", data);
+  });
 });
 
 server.listen(3000, () => {
