@@ -56,3 +56,23 @@ function createPeerConnection(userId) {
 
   return peerConnection;
 }
+
+// When a new user connects, create a peer connection and send offer
+socket.on("user-connected", async (userId) => {
+  console.log("User connected:", userId);
+
+  const peerConnection = createPeerConnection(userId);
+  peers[userId] = peerConnection;
+
+  // Create offer
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+
+  // Send offer
+  socket.emit("offer", {
+    target: userId,
+    caller: socket.id,
+    sdp: peerConnection.localDescription,
+  });
+  console.log(`Sent offer to user ${userId}`);
+});
