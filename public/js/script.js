@@ -76,3 +76,26 @@ socket.on("user-connected", async (userId) => {
   });
   console.log(`Sent offer to user ${userId}`);
 });
+
+// When an offer is received, create a peer connection, respond with answer
+socket.on("offer", async ({ caller, sdp }) => {
+  console.log("Received offer from:", caller);
+
+  // Create peer connection
+  const peerConnection = createPeerConnection(caller);
+  peers[caller] = peerConnection;
+
+  await peerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
+
+  // Create answer
+  const answer = await peerConnection.createAnswer();
+  await peerConnection.setLocalDescription(answer);
+
+  // Send answer
+  socket.emit("answer", {
+    target: caller,
+    caller: socket.id,
+    sdp: peerConnection.localDescription,
+  });
+  console.log(`Sent answer to caller ${caller}`);
+});
