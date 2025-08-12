@@ -22,6 +22,9 @@ io.on("connection", (socket) => {
   socket.on("join-room", (roomId) => {
     const userId = socket.id;
     socket.join(roomId);
+
+    // Save roomId on the socket for future reference
+    socket.roomId = roomId;
     console.log(`User ${userId} joined room ${roomId}`);
 
     // Tell other users in the room that a new user has connected
@@ -46,6 +49,18 @@ io.on("connection", (socket) => {
     const { target } = data;
     console.log(`Forwarding ice candidate from ${socket.id} to ${target}`);
     io.to(target).emit("ice-candidate", data);
+  });
+
+  socket.on("disconnect", (reason = null) => {
+    if (reason) {
+      console.log(`Disconnected due to: ${reason}`);
+    }
+    // Get the room ID associated with the socket
+    const roomId = socket.roomId;
+    if (roomId) {
+      // Notify other users in the room that this user's disconnected
+      socket.to(roomId).emit("user-disconnected", { userId: socket.id });
+    }
   });
 });
 
