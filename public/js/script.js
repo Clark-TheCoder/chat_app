@@ -36,7 +36,9 @@ start();
 
 function createPeerConnection(userId) {
   // Create peer connection
-  const peerConnection = new RTCPeerConnection();
+  const peerConnection = new RTCPeerConnection({
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  });
 
   // Add all local tracks to this peer connection
   localStream
