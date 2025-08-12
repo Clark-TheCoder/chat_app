@@ -7,3 +7,8 @@ export function createVideo() {
   videoGrid.appendChild(video);
   return video;
 }
+export function removeVideo(video) {
+  if (video) {
+    videoGrid.removeChild(video);
+  }
+}
