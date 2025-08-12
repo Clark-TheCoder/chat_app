@@ -136,3 +136,21 @@ socket.on("ice-candidate", async ({ caller, candidate }) => {
     }
   }
 });
+
+socket.on("user-disconnected", async ({ userId }) => {
+  // Get user peerConnection and video
+  const peerConnection = peers[userId];
+  const userVideo = videoElements[userId];
+
+  // Close the peer connection and remove it from storage
+  if (peerConnection) {
+    peerConnection.close();
+    delete peers[userId];
+    console.log(`${userId} disconnected.`);
+  }
+  // Remove video element from UI and storage
+  if (userVideo) {
+    userVideo.remove(userVideo);
+    delete videoElements[userId];
+  }
+});
