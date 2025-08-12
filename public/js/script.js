@@ -99,3 +99,17 @@ socket.on("offer", async ({ caller, sdp }) => {
   });
   console.log(`Sent answer to caller ${caller}`);
 });
+
+// When an answer is received, complete the handshake
+socket.on("answer", async ({ caller, sdp }) => {
+  console.log("Received answer from:", caller);
+
+  const peerConnection = peers[caller];
+  if (!peerConnection) {
+    console.warn(`No peerConnection found for caller ${caller}`);
+    return;
+  }
+
+  await peerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
+  console.log(`Set remote description from answer of caller ${caller}`);
+});
